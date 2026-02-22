@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Mouvements de Stock - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Mouvements de Stock</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stock_app:dashboard' %}">Stock</a></li>
+                    <li class="breadcrumb-item active">Mouvements</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exchange-alt mr-2"></i>
+                            Liste des mouvements
+                        </h3>
+                        <div class="card-tools">
+                            <a href="{% url 'stock_app:mouvement_create' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Nouveau mouvement
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Produit</th>
+                                        <th>Type</th>
+                                        <th>Quantité</th>
+                                        <th>Motif</th>
+                                        <th>Utilisateur</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mouvement in mouvements %}
+                                    <tr>
+                                        <td>{{ mouvement.date_mouvement|date:"d/m/Y H:i" }}</td>
+                                        <td>{{ mouvement.produit.nom }}</td>
+                                        <td>
+                                            {% if mouvement.type_mouvement == 'ENTREE' %}
+                                                <span class="badge badge-success">Entrée</span>
+                                            {% elif mouvement.type_mouvement == 'SORTIE' %}
+                                                <span class="badge badge-danger">Sortie</span>
+                                            {% elif mouvement.type_mouvement == 'AJUSTEMENT' %}
+                                                <span class="badge badge-warning">Ajustement</span>
+                                            {% elif mouvement.type_mouvement == 'PERTE' %}
+                                                <span class="badge badge-dark">Perte</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Retour</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ mouvement.quantite }}</td>
+                                        <td>{{ mouvement.motif|default:"-" }}</td>
+                                        <td>{{ mouvement.utilisateur.username|default:"-" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucun mouvement trouvé.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

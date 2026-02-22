@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord Commandes - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Gestion des Commandes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Commandes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Statistiques -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ total_commandes }}</h3>
+                        <p>Total Commandes</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ chiffre_affaires_today }} FCFA</h3>
+                        <p>CA Aujourd'hui</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ commandes_en_cours }}</h3>
+                        <p>En Cours</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ commandes_annulees }}</h3>
+                        <p>Annulées</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bolt mr-2"></i>
+                            Actions Rapides
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a href="{% url 'commandes_app:commande_create' %}" class="btn btn-primary btn-block">
+                                    <i class="fas fa-plus"></i> Nouvelle Commande
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="{% url 'commandes_app:commande_list' %}" class="btn btn-info btn-block">
+                                    <i class="fas fa-list"></i> Toutes les Commandes
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="{% url 'stats_app:dashboard' %}" class="btn btn-success btn-block">
+                                    <i class="fas fa-chart-bar"></i> Statistiques
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-warning btn-block" onclick="window.print()">
+                                    <i class="fas fa-print"></i> Imprimer Rapport
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Évolution des Commandes (7 derniers jours)
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="commandesChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            Répartition par Statut
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statutsChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commandes récentes -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-clock mr-2"></i>
+                            Commandes Récentes
+                        </h3>
+                        <div class="card-tools">
+                            <a href="{% url 'commandes_app:commande_list' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-list"></i> Voir tout
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Client</th>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for commande in commandes_recentes %}
+                                    <tr>
+                                        <td><strong>{{ commande.reference }}</strong></td>
+                                        <td>{{ commande.nom_client }}</td>
+                                        <td>{{ commande.date_commande|date:"d/m/Y H:i" }}</td>
+                                        <td class="text-primary font-weight-bold">{{ commande.montant_total }} FCFA</td>
+                                        <td>
+                                            {% if commande.statut == 'EN_ATTENTE' %}
+                                                <span class="badge badge-warning">En attente</span>
+                                            {% elif commande.statut == 'EN_PREPARATION' %}
+                                                <span class="badge badge-info">En préparation</span>
+                                            {% elif commande.statut == 'PRETE' %}
+                                                <span class="badge badge-primary">Prête</span>
+                                            {% elif commande.statut == 'SERVIE' %}
+                                                <span class="badge badge-success">Servie</span>
+                                            {% elif commande.statut == 'ANNULEE' %}
+                                                <span class="badge badge-danger">Annulée</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'commandes_app:commande_detail' commande.pk %}" 
+                                                   class="btn btn-info btn-sm" title="Voir">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if commande.statut != 'SERVIE' and commande.statut != 'ANNULEE' %}
+                                                <a href="{% url 'commandes_app:commande_update_statut' commande.pk %}" 
+                                                   class="btn btn-warning btn-sm" title="Changer statut">
+                                                    <i class="fas fa-sync"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucune commande récente trouvée.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript pour les graphiques -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Données depuis Django
+var datesGraphique = {{ dates_graphique|safe }};
+var commandesGraphique = {{ commandes_graphique|safe }};
+var statutsLabels = {{ statuts_labels|safe }};
+var statutsData = {{ statuts_data|safe }};
+
+// Graphique d'évolution des commandes
+const ctx1 = document.getElementById('commandesChart').getContext('2d');
+const commandesChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: datesGraphique,
+        datasets: [{
+            label: 'Nombre de commandes',
+            data: commandesGraphique,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Graphique de répartition par statut
+const ctx2 = document.getElementById('statutsChart').getContext('2d');
+const statutsChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: statutsLabels,
+        datasets: [{
+            data: statutsData,
+            backgroundColor: [
+                '#FFC107',
+                '#17A2B8',
+                '#007BFF',
+                '#28A745',
+                '#DC3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+</script>
+
+<!-- Styles d'impression -->
+<style>
+@media print {
+    .card-tools, .btn, .breadcrumb, .content-header {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}

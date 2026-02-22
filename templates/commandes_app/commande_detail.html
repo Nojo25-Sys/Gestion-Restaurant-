@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Détail Commande - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Commande #{{ commande.reference }}</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'commandes_app:commande_list' %}">Commandes</a></li>
+                    <li class="breadcrumb-item active">{{ commande.reference }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Détails de la commande
+                        </h3>
+                        <div class="card-tools">
+                            <a href="{% url 'commandes_app:commande_update' commande.pk %}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <a href="{% url 'commandes_app:commande_delete' commande.pk %}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Référence:</strong> {{ commande.reference }}</p>
+                                <p><strong>Client:</strong> {{ commande.client.get_full_name|default:commande.nom_client|default:"-" }}</p>
+                                <p><strong>Type:</strong> 
+                                    {% if commande.type_commande == 'SUR_PLACE' %}
+                                        <span class="badge badge-info">Sur place</span>
+                                    {% elif commande.type_commande == 'EMPORTER' %}
+                                        <span class="badge badge-warning">À emporter</span>
+                                    {% else %}
+                                        <span class="badge badge-success">Livraison</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Statut:</strong> 
+                                    {% if commande.statut == 'EN_ATTENTE' %}
+                                        <span class="badge badge-secondary">En attente</span>
+                                    {% elif commande.statut == 'EN_PREPARATION' %}
+                                        <span class="badge badge-warning">En préparation</span>
+                                    {% elif commande.statut == 'PRETE' %}
+                                        <span class="badge badge-info">Prête</span>
+                                    {% elif commande.statut == 'SERVIE' %}
+                                        <span class="badge badge-success">Servie</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Annulée</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Date:</strong> {{ commande.date_commande|date:"d/m/Y H:i" }}</p>
+                                <p><strong>Montant total:</strong> <strong>{{ commande.montant_total }} FCFA</strong></p>
+                            </div>
+                        </div>
+                        {% if commande.notes %}
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <p><strong>Notes:</strong> {{ commande.notes }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Lignes de commande -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list mr-2"></i>
+                            Produits commandés
+                        </h3>
+                        <div class="card-tools">
+                            <a href="{% url 'commandes_app:ajouter_ligne_commande' commande.pk %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Ajouter un produit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Quantité</th>
+                                        <th>Prix unitaire</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ligne in lignes_commande %}
+                                    <tr>
+                                        <td>{{ ligne.produit.nom }}</td>
+                                        <td>{{ ligne.quantite }}</td>
+                                        <td>{{ ligne.prix_unitaire }} FCFA</td>
+                                        <td>{{ ligne.prix_total }} FCFA</td>
+                                        <td>
+                                            <a href="{% url 'commandes_app:supprimer_ligne_commande' ligne.pk %}" 
+                                               class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucun produit dans cette commande.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Mise à jour du statut -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-sync mr-2"></i>
+                            Mettre à jour le statut
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'commandes_app:commande_update_statut' commande.pk %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Nouveau statut:</label>
+                                <select name="statut" class="form-control">
+                                    {% for choice in commande.STATUT_CHOICES %}
+                                    <option value="{{ choice.0 }}" 
+                                            {% if commande.statut == choice.0 %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Mettre à jour
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

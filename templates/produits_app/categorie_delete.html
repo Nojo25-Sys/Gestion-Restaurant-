@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer {{ categorie.nom }} - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Supprimer une catégorie</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'produits_app:categorie_list' %}">Catégories</a></li>
+                    <li class="breadcrumb-item active">{{ categorie.nom }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Confirmation de suppression
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-center">
+                            <i class="fas fa-tags fa-4x text-warning mb-3"></i>
+                        </p>
+                        
+                        <h4 class="text-center">Êtes-vous sûr de vouloir supprimer cette catégorie ?</h4>
+                        
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle mr-2"></i>Informations de la catégorie:</h5>
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td><strong>Nom:</strong></td>
+                                    <td>{{ categorie.nom }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Description:</strong></td>
+                                    <td>{{ categorie.description|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Nombre de produits:</strong></td>
+                                    <td>
+                                        <span class="badge badge-info">{{ categorie.produits.count }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        {% if categorie.produits.count > 0 %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>Attention:</strong> Cette catégorie contient {{ categorie.produits.count }} produit(s). 
+                            Vous devez d'abord déplacer ou supprimer ces produits avant de pouvoir supprimer la catégorie.
+                        </div>
+                        {% endif %}
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                {% if categorie.produits.count > 0 %}
+                                    <button type="button" class="btn btn-secondary btn-lg" disabled>
+                                        <i class="fas fa-trash"></i> Suppression impossible
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-warning btn-lg">
+                                        <i class="fas fa-trash"></i> Oui, supprimer
+                                    </button>
+                                {% endif %}
+                                <a href="{% url 'produits_app:categorie_list' %}" 
+                                   class="btn btn-secondary btn-lg ml-2">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Informations supplémentaires
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% if categorie.produits.count > 0 %}
+                        <h5>Produits dans cette catégorie:</h5>
+                        <div class="list-group">
+                            {% for produit in categorie.produits.all %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ produit.nom }}</strong><br>
+                                        <small class="text-muted">{{ produit.prix_vente }} FCFA | Stock: {{ produit.stock_actuel }}</small>
+                                    </div>
+                                    <span class="badge {% if produit.en_rupture %}badge-danger{% elif produit.stock_faible %}badge-warning{% else %}badge-success{% endif %}">
+                                        {{ produit.stock_actuel }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="alert alert-warning mt-3">
+                            <h6><i class="fas fa-lightbulb mr-2"></i>Solution recommandée:</h6>
+                            <p class="mb-0">
+                                1. Créez une nouvelle catégorie ou choisissez une catégorie existante<br>
+                                2. Déplacez tous les produits vers cette autre catégorie<br>
+                                3. Revenez ici pour supprimer cette catégorie
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <strong>Bonne nouvelle!</strong> Cette catégorie ne contient aucun produit. 
+                            Vous pouvez la supprimer en toute sécurité.
+                        </div>
+                        {% endif %}
+                        
+                        <h5>Conséquences de la suppression:</h5>
+                        <ul>
+                            <li>Nom et description de la catégorie seront perdus</li>
+                            <li>Historique des modifications sera conservé</li>
+                            <li>Statistiques globales ne seront pas affectées</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

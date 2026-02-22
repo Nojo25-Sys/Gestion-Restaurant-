@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">{{ title }}</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'produits_app:home' %}">Produits</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Informations du produit</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.nom.id_for_label }}">Nom du produit *</label>
+                                        {{ form.nom }}
+                                        {% if form.nom.errors %}
+                                            <div class="text-danger">
+                                                {{ form.nom.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.unite.id_for_label }}">Unité *</label>
+                                        {{ form.unite }}
+                                        {% if form.unite.errors %}
+                                            <div class="text-danger">
+                                                {{ form.unite.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.categorie.id_for_label }}">Catégorie *</label>
+                                        {{ form.categorie }}
+                                        {% if form.categorie.errors %}
+                                            <div class="text-danger">
+                                                {{ form.categorie.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.image.id_for_label }}">Image</label>
+                                        {{ form.image }}
+                                        {% if form.image.errors %}
+                                            <div class="text-danger">
+                                                {{ form.image.errors }}
+                                            </div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">
+                                            Formats acceptés: JPG, PNG, GIF. Taille max: 5MB
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.description.id_for_label }}">Description</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger">
+                                        {{ form.description.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="{{ form.prix_vente.id_for_label }}">Prix de vente (FCFA) *</label>
+                                        {{ form.prix_vente }}
+                                        {% if form.prix_vente.errors %}
+                                            <div class="text-danger">
+                                                {{ form.prix_vente.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="{{ form.stock_actuel.id_for_label }}">Stock actuel *</label>
+                                        {{ form.stock_actuel }}
+                                        {% if form.stock_actuel.errors %}
+                                            <div class="text-danger">
+                                                {{ form.stock_actuel.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="{{ form.seuil_alerte.id_for_label }}">Seuil d'alerte *</label>
+                                        {{ form.seuil_alerte }}
+                                        {% if form.seuil_alerte.errors %}
+                                            <div class="text-danger">
+                                                {{ form.seuil_alerte.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="{{ form.is_active.id_for_label }}">Statut</label>
+                                        <div class="mt-2">
+                                            {{ form.is_active }}
+                                            <small class="form-text text-muted">{{ form.is_active.label }}</small>
+                                        </div>
+                                        {% if form.is_active.errors %}
+                                            <div class="text-danger">
+                                                {{ form.is_active.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <a href="{% url 'produits_app:home' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Aide</h3>
+                    </div>
+                    <div class="card-body">
+                        <h5>Champs obligatoires</h5>
+                        <ul>
+                            <li><strong>Nom:</strong> Nom du produit</li>
+                            <li><strong>Catégorie:</strong> Catégorie du produit</li>
+                            <li><strong>Prix de vente:</strong> Prix de vente au client</li>
+                            <li><strong>Stock actuel:</strong> Quantité disponible</li>
+                            <li><strong>Seuil d'alerte:</strong> Niveau minimum de stock</li>
+                        </ul>
+                        
+                        <h5>Conseils</h5>
+                        <ul>
+                            <li>Utilisez une image de bonne qualité</li>
+                            <li>Décrivez clairement le produit</li>
+                            <li>Fixez un seuil d'alerte réaliste</li>
+                            <li>Le prix d'achat aide au calcul des marges</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

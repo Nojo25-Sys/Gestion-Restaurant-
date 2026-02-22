@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Commandes - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Commandes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Commandes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Liste des commandes ({{ commandes.count }})
+                        </h3>
+                        <div class="card-tools">
+                            <a href="{% url 'commandes_app:commande_create' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Nouvelle
+                            </a>
+                            <a href="{% url 'users:dashboard' %}" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <!-- Filtres -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <form method="get" class="form-inline">
+                                    <div class="input-group">
+                                        <input type="text" name="q" class="form-control" 
+                                               placeholder="Rechercher..." value="{{ query }}">
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-4">
+                                <form method="get">
+                                    <select name="statut" class="form-control" onchange="this.form.submit()">
+                                        <option value="">Tous les statuts</option>
+                                        {% for choice in commandes.0.STATUT_CHOICES %}
+                                        <option value="{{ choice.0 }}" {% if statut == choice.0 %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Tableau des commandes -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Référence</th>
+                                        <th>Client</th>
+                                        <th>Type</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for commande in commandes %}
+                                    <tr>
+                                        <td><strong>{{ commande.reference }}</strong></td>
+                                        <td>{{ commande.client.get_full_name|default:commande.nom_client|default:"-" }}</td>
+                                        <td>
+                                            {% if commande.type_commande == 'SUR_PLACE' %}
+                                                <span class="badge badge-info">Sur place</span>
+                                            {% elif commande.type_commande == 'EMPORTER' %}
+                                                <span class="badge badge-warning">À emporter</span>
+                                            {% else %}
+                                                <span class="badge badge-success">Livraison</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><strong>{{ commande.montant_total }} FCFA</strong></td>
+                                        <td>
+                                            {% if commande.statut == 'EN_ATTENTE' %}
+                                                <span class="badge badge-secondary">En attente</span>
+                                            {% elif commande.statut == 'EN_PREPARATION' %}
+                                                <span class="badge badge-warning">En préparation</span>
+                                            {% elif commande.statut == 'PRETE' %}
+                                                <span class="badge badge-info">Prête</span>
+                                            {% elif commande.statut == 'SERVIE' %}
+                                                <span class="badge badge-success">Servie</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Annulée</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ commande.date_commande|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'commandes_app:commande_detail' commande.pk %}" 
+                                                   class="btn btn-info btn-sm" title="Voir">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'commandes_app:commande_update' commande.pk %}" 
+                                                   class="btn btn-warning btn-sm" title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'commandes_app:commande_delete' commande.pk %}" 
+                                                   class="btn btn-danger btn-sm" title="Supprimer">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucune commande trouvée.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock %}

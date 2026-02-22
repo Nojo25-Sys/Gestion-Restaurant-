@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Catégories - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Catégories</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Catégories</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-tags mr-2"></i>
+                            Liste des catégories
+                        </h3>
+                        <div class="card-tools">
+                            {% if request.user.is_manager %}
+                            <a href="{% url 'produits_app:categorie_create' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'produits_app:home' %}" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                        <th>Nombre de produits</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for categorie in categories %}
+                                    <tr>
+                                        <td><strong>{{ categorie.nom }}</strong></td>
+                                        <td>{{ categorie.description|default:"-" }}</td>
+                                        <td>
+                                            <span class="badge badge-info">{{ categorie.produits.count }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                {% if request.user.is_manager %}
+                                                <a href="{% url 'produits_app:categorie_update' categorie.pk %}" 
+                                                   class="btn btn-warning btn-sm" title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'produits_app:categorie_delete' categorie.pk %}" 
+                                                   class="btn btn-danger btn-sm" title="Supprimer">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucune catégorie trouvée.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

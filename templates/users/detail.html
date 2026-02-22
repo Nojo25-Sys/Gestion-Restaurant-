@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Détail utilisateur - Restaurant Management{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Détail utilisateur</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'users:list' %}">Utilisateurs</a></li>
+                        <li class="breadcrumb-item active">Détail</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle" 
+                                     src="https://ui-avatars.com/api/?name={{ user_obj.get_full_name|default:user_obj.username }}&size=128&background=007bff&color=fff"
+                                     alt="User profile picture">
+                            </div>
+                            <h3 class="profile-username text-center">{{ user_obj.username }}</h3>
+                            <p class="text-muted text-center">{{ user_obj.get_role_display }}</p>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Informations utilisateur</h3>
+                            <div class="card-tools">
+                                {% if request.user.is_admin %}
+                                <a href="{% url 'users:update' user_obj.id %}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'users:list' %}" class="btn btn-default btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Retour
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th style="width: 150px">Username</th>
+                                    <td>{{ user_obj.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nom complet</th>
+                                    <td>{{ user_obj.get_full_name|default:"Non renseigné" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ user_obj.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Rôle</th>
+                                    <td>
+                                        <span class="badge badge-{{ user_obj.role|lower }}">
+                                            {{ user_obj.get_role_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Téléphone</th>
+                                    <td>{{ user_obj.telephone|default:"Non renseigné" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Adresse</th>
+                                    <td>{{ user_obj.adresse|default:"Non renseignée" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date de création</th>
+                                    <td>{{ user_obj.date_created|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Dernière mise à jour</th>
+                                    <td>{{ user_obj.date_updated|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Statut</th>
+                                    <td>
+                                        {% if user_obj.is_active %}
+                                            <span class="badge badge-success">Actif</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Inactif</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Staff</th>
+                                    <td>
+                                        {% if user_obj.is_staff %}
+                                            <span class="badge badge-info">Oui</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary">Non</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<style>
+.badge-admin { background-color: #dc3545; }
+.badge-manager { background-color: #fd7e14; }
+.badge-staff { background-color: #20c997; }
+.badge-client { background-color: #6c757d; }
+</style>
+{% endblock %}

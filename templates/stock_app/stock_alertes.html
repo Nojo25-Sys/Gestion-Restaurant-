@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Alertes de Stock - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Alertes de Stock</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stock_app:dashboard' %}">Stock</a></li>
+                    <li class="breadcrumb-item active">Alertes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Produits en rupture -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-times-circle mr-2"></i>
+                            Produits en Rupture ({{ produits_rupture.count }})
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% if produits_rupture %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Prix</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for produit in produits_rupture %}
+                                    <tr>
+                                        <td>{{ produit.nom }}</td>
+                                        <td>{{ produit.categorie.nom }}</td>
+                                        <td>{{ produit.prix_vente }} FCFA</td>
+                                        <td>
+                                            <a href="{% url 'stock_app:mouvement_create' %}?produit={{ produit.pk }}" 
+                                               class="btn btn-warning btn-sm">
+                                                <i class="fas fa-plus"></i> Réapprovisionner
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Aucun produit en rupture de stock!
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Produits en alerte -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Stock Faible ({{ produits_alerte.count }})
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% if produits_alerte %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Stock Actuel</th>
+                                        <th>Seuil d'alerte</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for produit in produits_alerte %}
+                                    <tr>
+                                        <td>{{ produit.nom }}</td>
+                                        <td>{{ produit.categorie.nom }}</td>
+                                        <td><span class="badge badge-warning">{{ produit.stock_actuel }}</span></td>
+                                        <td>{{ produit.seuil_alerte }}</td>
+                                        <td>
+                                            <a href="{% url 'stock_app:mouvement_create' %}?produit={{ produit.pk }}" 
+                                               class="btn btn-warning btn-sm">
+                                                <i class="fas fa-plus"></i> Réapprovisionner
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Aucune alerte de stock faible!
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

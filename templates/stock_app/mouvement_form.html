@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Nouveau Mouvement - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">{{ title }}</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stock_app:dashboard' %}">Stock</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Informations du mouvement</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="{{ form.produit.id_for_label }}">Produit</label>
+                                {{ form.produit }}
+                                {% if form.produit.errors %}
+                                    <div class="text-danger">
+                                        {{ form.produit.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.type_mouvement.id_for_label }}">Type de mouvement</label>
+                                {{ form.type_mouvement }}
+                                {% if form.type_mouvement.errors %}
+                                    <div class="text-danger">
+                                        {{ form.type_mouvement.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.quantite.id_for_label }}">Quantité</label>
+                                {{ form.quantite }}
+                                {% if form.quantite.errors %}
+                                    <div class="text-danger">
+                                        {{ form.quantite.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.motif.id_for_label }}">Motif</label>
+                                {{ form.motif }}
+                                {% if form.motif.errors %}
+                                    <div class="text-danger">
+                                        {{ form.motif.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <a href="{% url 'stock_app:mouvement_list' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

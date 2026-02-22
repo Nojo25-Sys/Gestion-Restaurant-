@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques Produits - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Statistiques des Produits</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stats_app:dashboard' %}">Statistiques</a></li>
+                    <li class="breadcrumb-item active">Produits</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Statistiques principales -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="info-box bg-info">
+                    <span class="info-box-icon"><i class="fas fa-box"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Total Produits</span>
+                        <span class="info-box-number">{{ total_produits }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-success">
+                    <span class="info-box-icon"><i class="fas fa-chart-line"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Stock Critique</span>
+                        <span class="info-box-number">{{ stock_critique }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-warning">
+                    <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Stock Rupture</span>
+                        <span class="info-box-number">{{ stock_rupture }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-danger">
+                    <span class="info-box-icon"><i class="fas fa-dollar-sign"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Valeur Stock</span>
+                        <span class="info-box-number">{{ valeur_stock }} FCFA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top produits vendus -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-star mr-2"></i>
+                            Top 20 Produits les Plus Vendus
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>Quantité Vendue</th>
+                                        <th>CA Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for produit in top_vendus %}
+                                    <tr>
+                                        <td>{{ produit.produit__nom }}</td>
+                                        <td>{{ produit.produit__categorie__nom|default:"-" }}</td>
+                                        <td class="text-center">{{ produit.total_quantite }}</td>
+                                        <td class="text-right">{{ produit.total_ca }} FCFA</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">
+                                            Aucune donnée de vente disponible
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top produits rentables -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            Top 20 Produits les Plus Rentables
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Catégorie</th>
+                                        <th>CA Total</th>
+                                        <th>Rentabilité</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for produit in top_rentables %}
+                                    <tr>
+                                        <td>{{ produit.produit__nom }}</td>
+                                        <td>{{ produit.produit__categorie__nom|default:"-" }}</td>
+                                        <td class="text-right font-weight-bold">{{ produit.total_ca }} FCFA</td>
+                                        <td class="text-center">
+                                            {% if produit.total_ca > 10000 %}
+                                                <span class="badge badge-success">Élevée</span>
+                                            {% elif produit.total_ca > 5000 %}
+                                                <span class="badge badge-warning">Moyenne</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">Faible</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">
+                                            Aucune donnée de rentabilité disponible
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

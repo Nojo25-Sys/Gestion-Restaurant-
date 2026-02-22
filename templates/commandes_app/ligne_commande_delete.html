@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer Ligne - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Supprimer le produit</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'commandes_app:commande_list' %}">Commandes</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'commandes_app:commande_detail' ligne.commande.pk %}">{{ ligne.commande.reference }}</a></li>
+                    <li class="breadcrumb-item active">Supprimer</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Confirmation de suppression
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Êtes-vous sûr de vouloir retirer ce produit de la commande?</p>
+                        <p><strong>Produit:</strong> {{ ligne.produit.nom }}</p>
+                        <p><strong>Quantité:</strong> {{ ligne.quantite }}</p>
+                        <p><strong>Prix unitaire:</strong> {{ ligne.prix_unitaire }} FCFA</p>
+                        <p><strong>Total:</strong> {{ ligne.prix_total }} FCFA</p>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Le produit sera remis en stock automatiquement.
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-trash"></i> Confirmer la suppression
+                            </button>
+                            <a href="{% url 'commandes_app:commande_detail' ligne.commande.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

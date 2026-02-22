@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer utilisateur - Restaurant Management{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Supprimer utilisateur</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'users:list' %}">Utilisateurs</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'users:detail' user_obj.id %}">Détail</a></li>
+                        <li class="breadcrumb-item active">Supprimer</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-exclamation-triangle mr-2 text-danger"></i>
+                                Confirmation de suppression
+                            </h3>
+                            <div class="card-tools">
+                                <a href="{% url 'users:detail' user_obj.id %}" class="btn btn-default btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Retour
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h4><i class="icon fas fa-exclamation-triangle"></i> Attention!</h4>
+                                Vous êtes sur le point de supprimer l'utilisateur <strong>{{ user_obj.username }}</strong>. 
+                                Cette action est irréversible.
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Username</th>
+                                            <td>{{ user_obj.username }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nom complet</th>
+                                            <td>{{ user_obj.get_full_name|default:"Non renseigné" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email</th>
+                                            <td>{{ user_obj.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Rôle</th>
+                                            <td>
+                                                <span class="badge badge-{{ user_obj.role|lower }}">
+                                                    {{ user_obj.get_role_display }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Date de création</th>
+                                            <td>{{ user_obj.date_created|date:"d/m/Y H:i" }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <form method="post" class="mt-3">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Confirmer la suppression
+                                </button>
+                                <a href="{% url 'users:detail' user_obj.id %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </form>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<style>
+.badge-admin { background-color: #dc3545; }
+.badge-manager { background-color: #fd7e14; }
+.badge-staff { background-color: #20c997; }
+.badge-client { background-color: #6c757d; }
+</style>
+{% endblock %}

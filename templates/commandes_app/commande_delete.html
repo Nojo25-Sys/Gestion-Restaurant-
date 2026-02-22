@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer Commande - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Supprimer la commande</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'commandes_app:commande_list' %}">Commandes</a></li>
+                    <li class="breadcrumb-item active">Supprimer</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Confirmation de suppression
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Êtes-vous sûr de vouloir supprimer la commande <strong>{{ commande.reference }}</strong>?</p>
+                        <p><strong>Référence:</strong> {{ commande.reference }}</p>
+                        <p><strong>Client:</strong> {{ commande.client.get_full_name|default:commande.nom_client|default:"-" }}</p>
+                        <p><strong>Montant:</strong> {{ commande.montant_total }} FCFA</p>
+                        <p><strong>Date:</strong> {{ commande.date_commande|date:"d/m/Y H:i" }}</p>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>Attention:</strong> Cette action est irréversible et supprimera également tous les produits associés à cette commande.
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Confirmer la suppression
+                            </button>
+                            <a href="{% url 'commandes_app:commande_detail' commande.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

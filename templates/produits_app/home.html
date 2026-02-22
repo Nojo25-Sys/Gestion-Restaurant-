@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Produits - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Produits</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Produits</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Formulaire de recherche -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-search mr-2"></i>
+                            Recherche et Filtres
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" class="row">
+                            <div class="col-md-3">
+                                <label for="{{ form.query.id_for_label }}">Recherche</label>
+                                {{ form.query }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ form.categorie.id_for_label }}">Catégorie</label>
+                                {{ form.categorie }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ form.prix_min.id_for_label }}">Prix min</label>
+                                {{ form.prix_min }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ form.prix_max.id_for_label }}">Prix max</label>
+                                {{ form.prix_max }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ form.en_stock.id_for_label }}">En stock</label>
+                                <div class="mt-2">
+                                    {{ form.en_stock }}
+                                    <small class="form-text text-muted">{{ form.en_stock.label }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <label>&nbsp;</label>
+                                <div class="mt-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="row mb-3">
+            <div class="col-12">
+                {% if request.user.is_manager %}
+                <a href="{% url 'produits_app:produit_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter un produit
+                </a>
+                <a href="{% url 'produits_app:categorie_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Ajouter une catégorie
+                </a>
+                {% endif %}
+                <a href="{% url 'produits_app:produit_list' %}" class="btn btn-info">
+                    <i class="fas fa-list"></i> Liste complète
+                </a>
+            </div>
+        </div>
+
+        <!-- Grille de produits -->
+        <div class="row">
+            {% for produit in produits %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            {% if produit.image %}
+                                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" 
+                                     class="img-fluid rounded" style="max-height: 150px;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150x150?text=No+Image" 
+                                     alt="{{ produit.nom }}" class="img-fluid rounded">
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title">{{ produit.nom }}</h5>
+                        <p class="card-text text-muted small">{{ produit.categorie.nom }}</p>
+                        <p class="card-text">{{ produit.description|truncatewords:10 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-primary">{{ produit.prix_vente }} FCFA</span>
+                            {% if produit.en_rupture %}
+                                <span class="badge badge-danger">Rupture</span>
+                            {% elif produit.stock_faible %}
+                                <span class="badge badge-warning">{{ produit.stock_actuel }}</span>
+                            {% else %}
+                                <span class="badge badge-success">{{ produit.stock_actuel }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100">
+                            <a href="{% url 'produits_app:produit_detail' produit.pk %}" 
+                               class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            {% if request.user.is_manager %}
+                            <a href="{% url 'produits_app:produit_update' produit.pk %}" 
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Aucun produit trouvé.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="row">
+            <div class="col-12">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

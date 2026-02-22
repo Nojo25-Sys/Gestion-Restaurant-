@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ user_count }}</h3>
+                        <p>Utilisateurs</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="{% url 'users:list' %}" class="small-box-footer">
+                        Voir plus <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- ./col -->
+            
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{produit_count}}</h3>
+                        <p>Produits</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">
+                        Voir plus <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- ./col -->
+            
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{commandes_count}}</h3>
+                        <p>Commandes</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">
+                        Voir plus <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- ./col -->
+            
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{chiffre_affaires}}</h3>
+                        <p>Chiffre d'affaires</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-euro-sign"></i>
+                    </div>
+                    <a href="/statistiques/chiffre-affaires/" class="small-box-footer">
+                        Voir plus <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <!-- /.row -->
+
+        <!-- Main row -->
+        <div class="row">
+            <!-- Left col -->
+            <section class="col-lg-7 connectedSortable">
+                <!-- Custom card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-1"></i>
+                            Bienvenue, {{ user.get_full_name|default:user.username }}!
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h5><i class="icon fas fa-info"></i> Rôle: {{ user.get_role_display }}</h5>
+                            <p>Bienvenue dans votre système de gestion de restaurant. Vous pouvez naviguer dans les différentes sections à partir du menu de gauche.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-1"></i>
+                            Statistiques
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </section>
+            <!-- /.col -->
+            
+            <!-- Right col -->
+            <section class="col-lg-5 connectedSortable">
+                <!-- Calendar Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="far fa-calendar-alt"></i>
+                            Informations
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box mb-3 bg-light">
+                            <span class="info-box-icon bg-info elevation-1">
+                                <i class="fas fa-cog"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Version</span>
+                                <span class="info-box-number">1.0.0</span>
+                            </div>
+                        </div>
+                        <div class="info-box mb-3 bg-light">
+                            <span class="info-box-icon bg-success elevation-1">
+                                <i class="fas fa-database"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Base de données</span>
+                                <span class="info-box-number">SQLite</span>
+                            </div>
+                        </div>
+                        <div class="info-box mb-3 bg-light">
+                            <span class="info-box-icon bg-warning elevation-1">
+                                <i class="fas fa-server"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Serveur</span>
+                                <span class="info-box-number">Development</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Info Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user mr-1"></i>
+                            Mon Profil
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&size=100&background=007bff&color=fff" 
+                                 class="img-circle elevation-2" alt="User Image">
+                        </div>
+                        <h3 class="profile-username text-center">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-muted text-center">{{ user.get_role_display }}</p>
+                        <ul class="list-group list-group-unbordered mb-3">
+                            <li class="list-group-item">
+                                <b>Email</b> <a class="float-right">{{ user.email|default:"Non renseigné" }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Téléphone</b> <a class="float-right">{{ user.telephone|default:"Non renseigné" }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Membre depuis</b> <a class="float-right">{{ user.date_created|date:"d/m/Y" }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+<script>
+$(function () {
+    // Chart initialization
+    var salesChartCanvas = $('#salesChart').get(0).getContext('2d')
+    var salesChart = new Chart(salesChartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Utilisateurs', 'Produits', 'Commandes', 'Chiffre d\'affaires'],
+            datasets: [{
+                data: [{{ user_count }}, 0, 0, 0],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true
+        }
+    })
+})
+</script>
+
+<!-- ChartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

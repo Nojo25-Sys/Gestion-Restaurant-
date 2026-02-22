@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer {{ produit.nom }} - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Supprimer un produit</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'produits_app:home' %}">Produits</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'produits_app:produit_detail' produit.pk %}">{{ produit.nom }}</a></li>
+                    <li class="breadcrumb-item active">Supprimer</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Confirmation de suppression
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-center">
+                            <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                        </p>
+                        
+                        <h4 class="text-center">Êtes-vous sûr de vouloir supprimer ce produit ?</h4>
+                        
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-info-circle mr-2"></i>Informations du produit:</h5>
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td><strong>Nom:</strong></td>
+                                    <td>{{ produit.nom }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Catégorie:</strong></td>
+                                    <td>{{ produit.categorie.nom }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prix:</strong></td>
+                                    <td>{{ produit.prix_vente }} FCFA</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stock:</strong></td>
+                                    <td>{{ produit.stock_actuel }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>Attention:</strong> Cette action est irréversible. 
+                            Toutes les données associées à ce produit seront définitivement perdues.
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="fas fa-trash"></i> Oui, supprimer
+                                </button>
+                                <a href="{% url 'produits_app:produit_detail' produit.pk %}" 
+                                   class="btn btn-secondary btn-lg ml-2">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Conséquences de la suppression
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <h5>Données qui seront perdues:</h5>
+                        <ul>
+                            <li>Informations du produit (nom, description, prix)</li>
+                            <li>Historique des mouvements de stock</li>
+                            <li>Lignes de commande contenant ce produit</li>
+                            <li>Image du produit (si présente)</li>
+                            <li>Statistiques et rapports associés</li>
+                        </ul>
+                        
+                        <h5>Alternatives:</h5>
+                        <ul>
+                            <li><strong>Désactiver le produit:</strong> Le produit reste dans la base mais n'est plus visible</li>
+                            <li><strong>Mettre le stock à 0:</strong> Le produit ne pourra plus être vendu</li>
+                            <li><strong>Archiver le produit:</strong> Conserver les données pour les rapports futurs</li>
+                        </ul>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            <strong>Suggestion:</strong> Si vous avez besoin de conserver l'historique des ventes, 
+                            il est préférable de désactiver le produit plutôt que de le supprimer.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

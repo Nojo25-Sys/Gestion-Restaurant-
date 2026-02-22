@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Chiffre d'Affaires - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Chiffre d'Affaires</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stats_app:dashboard' %}">Statistiques</a></li>
+                    <li class="breadcrumb-item active">Chiffre d'Affaires</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Filtres -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-filter mr-2"></i>
+                            Filtres
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" class="row">
+                            <div class="col-md-3">
+                                <label for="date_debut">Date début</label>
+                                <input type="date" name="date_debut" class="form-control" value="{{ request.GET.date_debut }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date_fin">Date fin</label>
+                                <input type="date" name="date_fin" class="form-control" value="{{ request.GET.date_fin }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="periode">Période</label>
+                                <select name="periode" class="form-control">
+                                    <option value="">Personnalisée</option>
+                                    <option value="aujourd'hui" {% if request.GET.periode == "aujourd'hui" %}selected{% endif %}>Aujourd'hui</option>
+                                    <option value="semaine" {% if request.GET.periode == "semaine" %}selected{% endif %}>Cette semaine</option>
+                                    <option value="mois" {% if request.GET.periode == "mois" %}selected{% endif %}>Ce mois</option>
+                                    <option value="annee" {% if request.GET.periode == "annee" %}selected{% endif %}>Cette année</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Filtrer
+                                    </button>
+                                    <a href="{% url 'stats_app:chiffre_affaires' %}" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Réinitialiser
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques principales -->
+        <div class="row mb-3">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ chiffre_affaires_total }} FCFA</h3>
+                        <p>Chiffre d'Affaires</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ nombre_commandes }}</h3>
+                        <p>Commandes</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ panier_moyen }} FCFA</h3>
+                        <p>Panier moyen</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ nombre_clients }}</h3>
+                        <p>Clients</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Évolution du Chiffre d'Affaires
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="caChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            Répartition par Type
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="typeChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau détaillé -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-table mr-2"></i>
+                            Détail des Chiffres d'Affaires
+                        </h3>
+                        <div class="card-tools">
+                            <button class="btn btn-success" onclick="window.print()">
+                                <i class="fas fa-print"></i> Imprimer
+                            </button>
+                            <a href="{% url 'stats_app:export_ca' %}" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Exporter
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Commandes</th>
+                                        <th>Chiffre d'Affaires</th>
+                                        <th>Panier moyen</th>
+                                        <th>Progression</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for jour in statistiques_jour %}
+                                    <tr>
+                                        <td>{{ jour.date|date:"d/m/Y" }}</td>
+                                        <td>{{ jour.nombre_commandes }}</td>
+                                        <td class="text-primary font-weight-bold">{{ jour.chiffre_affaires }} FCFA</td>
+                                        <td>{{ jour.panier_moyen }} FCFA</td>
+                                        <td>
+                                            {% if jour.progression > 0 %}
+                                                <span class="badge badge-success">+{{ jour.progression|floatformat:1 }}%</span>
+                                            {% elif jour.progression < 0 %}
+                                                <span class="badge badge-danger">{{ jour.progression|floatformat:1 }}%</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">0%</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                Aucune donnée trouvée pour la période sélectionnée.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-primary text-white">
+                                        <th>Total</th>
+                                        <th>{{ nombre_commandes }}</th>
+                                        <th>{{ chiffre_affaires_total }} FCFA</th>
+                                        <th>{{ panier_moyen }} FCFA</th>
+                                        <th>-</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript pour les graphiques -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Données depuis Django
+var chartData = {
+    dates: {{ dates|safe }},
+    chiffresAffaires: {{ chiffres_affaires|safe }},
+    typesLabels: {{ types_labels|safe }},
+    typesData: {{ types_data|safe }}
+};
+
+// Graphique d'évolution du chiffre d'affaires
+var ctx1 = document.getElementById('caChart').getContext('2d');
+var caChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: chartData.dates,
+        datasets: [{
+            label: 'Chiffre d\'Affaires (FCFA)',
+            data: chartData.chiffresAffaires,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Graphique de répartition par type
+var ctx2 = document.getElementById('typeChart').getContext('2d');
+var typeChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: chartData.typesLabels,
+        datasets: [{
+            data: chartData.typesData,
+            backgroundColor: [
+                '#FFC107',
+                '#17A2B8',
+                '#007BFF',
+                '#28A745',
+                '#DC3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+</script>
+
+<!-- Styles d'impression -->
+<style>
+@media print {
+    .card-tools, .btn, .breadcrumb, .content-header {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}

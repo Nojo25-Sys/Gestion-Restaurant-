@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques Commandes - Restaurant Management{% endblock %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Statistiques des Commandes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'users:dashboard' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'stats_app:dashboard' %}">Statistiques</a></li>
+                    <li class="breadcrumb-item active">Commandes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Statistiques principales -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="info-box bg-info">
+                    <span class="info-box-icon"><i class="fas fa-shopping-cart"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Panier Moyen</span>
+                        <span class="info-box-number">{{ panier_moyen|floatformat:0 }} FCFA</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-success">
+                    <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Commandes Validées</span>
+                        <span class="info-box-number">{{ statuts|length }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-warning">
+                    <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">En Attente</span>
+                        <span class="info-box-number">{{ statuts|dict_get:'EN_ATTENTE'|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-box bg-danger">
+                    <span class="info-box-icon"><i class="fas fa-times-circle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Annulées</span>
+                        <span class="info-box-number">{{ statuts|dict_get:'ANNULEE'|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Répartition par statut -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            Répartition par Statut
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Statut</th>
+                                        <th>Nombre</th>
+                                        <th>Pourcentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for statut in statuts %}
+                                    <tr>
+                                        <td>
+                                            {% if statut.statut == 'EN_ATTENTE' %}
+                                                <span class="badge badge-secondary">En attente</span>
+                                            {% elif statut.statut == 'EN_PREPARATION' %}
+                                                <span class="badge badge-warning">En préparation</span>
+                                            {% elif statut.statut == 'PRETE' %}
+                                                <span class="badge badge-info">Prête</span>
+                                            {% elif statut.statut == 'SERVIE' %}
+                                                <span class="badge badge-success">Servie</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Annulée</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ statut.count }}</td>
+                                        <td class="text-center">
+                                            {% widthratio statut.count statuts|sum:'count' 100 %}%
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            Aucune commande trouvée
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Répartition par type -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            Répartition par Type
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Nombre</th>
+                                        <th>Pourcentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for type in types %}
+                                    <tr>
+                                        <td>
+                                            {% if type.type_commande == 'SUR_PLACE' %}
+                                                <span class="badge badge-info">Sur place</span>
+                                            {% elif type.type_commande == 'EMPORTER' %}
+                                                <span class="badge badge-warning">À emporter</span>
+                                            {% else %}
+                                                <span class="badge badge-success">Livraison</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ type.count }}</td>
+                                        <td class="text-center">
+                                            {% widthratio type.count types|sum:'count' 100 %}%
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            Aucune commande trouvée
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Évolution des commandes -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Évolution des Commandes (30 derniers jours)
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="commandesChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript pour le graphique -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Préparer les données pour Chart.js
+var labels = [];
+var data = [];
+
+{% for jour in commandes_jour %}
+labels.push('{{ jour.date }}');
+data.push({{ jour.count }});
+{% endfor %}
+
+// Graphique d'évolution des commandes
+var ctx = document.getElementById('commandesChart').getContext('2d');
+var commandesChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Nombre de commandes',
+            data: data,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
