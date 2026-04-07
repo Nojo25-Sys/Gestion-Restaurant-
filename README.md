@@ -393,7 +393,7 @@ Ce projet est sous licence **MIT** - voir fichier [LICENSE](LICENSE) pour détai
 ## 📞 Contact
 
 - **Développeur:** Nojo25-Sys
-- **Email:** contact@restaurant-management.com
+- **Email:** elvistsiabo@gmail.com
 - **GitHub:** [@Nojo25-Sys](https://github.com/Nojo25-Sys)
 
 ---
