@@ -1,66 +1,58 @@
-from django.db import models
-from django.utils import timezone
-from produits_app.models import Produit
+from django.db import models, transaction
+from django.core.exceptions import ValidationError
+
 
 class MouvementStock(models.Model):
-    """
-    Modèle pour les mouvements de stock
-    """
     TYPE_CHOICES = (
-        ('ENTREE', 'Entrée'),
-        ('SORTIE', 'Sortie'),
+        ('ENTREE',     'Entrée'),
+        ('SORTIE',     'Sortie'),
         ('AJUSTEMENT', 'Ajustement'),
-        ('PERTE', 'Perte'),
-        ('RETOUR', 'Retour client'),
+        ('PERTE',      'Perte'),
+        ('RETOUR',     'Retour client'),
     )
-    
-    produit = models.ForeignKey(
-        Produit,
-        on_delete=models.CASCADE,
-        related_name='mouvements',
-        verbose_name='Produit'
-    )
-    type_mouvement = models.CharField(
-        max_length=20,
-        choices=TYPE_CHOICES,
-        verbose_name='Type de mouvement'
-    )
-    quantite = models.IntegerField(
-        verbose_name='Quantité'
-    )
-    motif = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name='Motif'
-    )
-    date_mouvement = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Date du mouvement'
-    )
-    utilisateur = models.ForeignKey(
-        'users.User',
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Utilisateur'
-    )
-    
+
+    produit        = models.ForeignKey('produits_app.Produit', on_delete=models.CASCADE, related_name='mouvements')
+    type_mouvement = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    quantite       = models.IntegerField()
+    motif          = models.TextField(blank=True, null=True)
+    date_mouvement = models.DateTimeField(auto_now_add=True)
+    utilisateur    = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+
     class Meta:
         verbose_name = 'Mouvement de stock'
-        verbose_name_plural = 'Mouvements de stock'
-        ordering = ['-date_mouvement']
-    
+        ordering     = ['-date_mouvement']
+
     def __str__(self):
-        return f"{self.get_type_mouvement_display()} - {self.quantite} x {self.produit.nom}"
-    
+        return f'{self.get_type_mouvement_display()} — {self.quantite} × {self.produit.nom}'
+
+    def clean(self):
+        if self.quantite == 0:
+            raise ValidationError({'quantite': 'La quantité ne peut pas être zéro.'})
+
+    @transaction.atomic
     def save(self, *args, **kwargs):
+        from produits_app.models import Produit
+
+        # Verrou pessimiste — empêche la race condition
+        produit = Produit.objects.select_for_update().get(pk=self.produit_id)
+
+        nouveau_stock = self._calculer_nouveau_stock(produit.stock_actuel)
+
+        if nouveau_stock < 0:
+            raise ValidationError(
+                f'Stock insuffisant. Actuel : {produit.stock_actuel}, demandé : {self.quantite}.'
+            )
+
         super().save(*args, **kwargs)
-        
-        # Mettre à jour le stock du produit
-        if self.type_mouvement == 'ENTREE' or self.type_mouvement == 'RETOUR':
-            self.produit.stock_actuel += self.quantite
-        elif self.type_mouvement == 'SORTIE' or self.type_mouvement == 'PERTE':
-            self.produit.stock_actuel -= self.quantite
-        elif self.type_mouvement == 'AJUSTEMENT':
-            self.produit.stock_actuel = self.quantite
-        
-        self.produit.save()
+        Produit.objects.filter(pk=self.produit_id).update(stock_actuel=nouveau_stock)
+        self.produit.stock_actuel = nouveau_stock
+
+    def _calculer_nouveau_stock(self, stock_actuel: int) -> int:
+        t = self.type_mouvement
+        if t in ('ENTREE', 'RETOUR'):
+            return stock_actuel + abs(self.quantite)
+        if t in ('SORTIE', 'PERTE'):
+            return stock_actuel - abs(self.quantite)
+        if t == 'AJUSTEMENT':
+            return self.quantite
+        return stock_actuel
