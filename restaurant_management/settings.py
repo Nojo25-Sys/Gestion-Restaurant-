@@ -135,14 +135,31 @@ LOGGING = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Railway Configuration
-import dj_database_url
 import os
 
 # Database configuration for Railway
 if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    }
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        }
+    except ImportError:
+        # Fallback si dj_database_url n'est pas installé
+        import urllib.parse
+        db_url = os.environ.get('DATABASE_URL')
+        if db_url:
+            parsed = urllib.parse.urlparse(db_url)
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': parsed.path[1:],
+                    'USER': parsed.username,
+                    'PASSWORD': parsed.password,
+                    'HOST': parsed.hostname,
+                    'PORT': parsed.port or 5432,
+                }
+            }
 
 # Static files configuration for production
 STATIC_ROOT = BASE_DIR / 'staticfiles'
