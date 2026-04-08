@@ -113,3 +113,19 @@ Traceback (most recent call last):
         "Unsafe redirect to URL with protocol '%s'" % parsed.scheme
     )
 django.core.exceptions.DisallowedRedirect: Unsafe redirect to URL with protocol 'users'
+WARNING 2026-04-08 01:02:45,572 log — Not Found: /
+WARNING 2026-04-08 01:02:45,586 log — "GET / HTTP/1.1" 404 5048
+WARNING 2026-04-08 01:02:58,597 log — Not Found: /
+WARNING 2026-04-08 01:02:58,609 log — "GET / HTTP/1.1" 404 5048
+WARNING 2026-04-08 01:02:59,221 log — Not Found: /favicon.ico
+WARNING 2026-04-08 01:02:59,223 log — "GET /favicon.ico HTTP/1.1" 404 5099
+WARNING 2026-04-08 07:44:42,476 log — Not Found: /docs
+WARNING 2026-04-08 07:44:42,478 log — "GET /docs HTTP/1.1" 404 5324
+WARNING 2026-04-08 07:44:42,897 log — Not Found: /favicon.ico
+WARNING 2026-04-08 07:44:42,898 log — "GET /favicon.ico HTTP/1.1" 404 5345
+WARNING 2026-04-08 07:45:00,259 log — Not Found: /docs
+WARNING 2026-04-08 07:45:00,260 log — "GET /docs HTTP/1.1" 404 5324
+WARNING 2026-04-08 07:45:27,759 log — Not Found: /page/login
+WARNING 2026-04-08 07:45:27,759 log — "GET /page/login HTTP/1.1" 404 5342
+WARNING 2026-04-08 07:46:46,645 log — Not Found: /favicon.ico
+WARNING 2026-04-08 07:46:46,646 log — "GET /favicon.ico HTTP/1.1" 404 5345

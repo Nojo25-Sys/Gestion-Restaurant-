@@ -9,6 +9,20 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm, UserUpdateF
 from produits_app.models import Produit
 from commandes_app.models import Commande
 
+def home_view(request):
+    """
+    Page d'accueil du restaurant
+    """
+    if request.user.is_authenticated:
+        return redirect('users:dashboard')
+    
+    # Page d'accueil publique
+    context = {
+        'title': 'Restaurant Management System',
+        'description': 'Système complet de gestion pour restaurants'
+    }
+    return render(request, 'users/home.html', context)
+
 @login_required
 def dashboard_view(request):
     """
