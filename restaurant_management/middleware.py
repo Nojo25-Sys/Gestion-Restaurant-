@@ -93,5 +93,7 @@ class AuthAccessMiddleware:
         if not request.user.is_authenticated:
             if any(request.path.startswith(p) for p in self.PROTECTED_PREFIXES):
                 from django.shortcuts import redirect
-                return redirect(f'{self.login_url}?next={request.path}')
+                from django.urls import reverse
+                login_url = reverse('users:login')
+                return redirect(f'{login_url}?next={request.path}')
         return self.get_response(request)

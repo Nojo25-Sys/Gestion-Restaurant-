@@ -21,3 +21,95 @@ Traceback (most recent call last):
     )
 django.core.exceptions.DisallowedRedirect: Unsafe redirect to URL with protocol 'users'
 WARNING 2026-04-07 17:23:02,201 log — "GET /dashboard/ HTTP/1.1" 400 75948
+ERROR 2026-04-08 00:47:26,399 log — Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\utils\deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\request.py", line 205, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2026-04-08 00:47:26,581 log — Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\utils\deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\request.py", line 205, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2026-04-08 00:47:26,665 log — Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\utils\deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\request.py", line 205, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2026-04-08 00:47:26,719 log — Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\utils\deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\request.py", line 205, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2026-04-08 00:47:45,504 log — Unsafe redirect to URL with protocol 'users'
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\Block\restaurant_management\restaurant_management\middleware.py", line 96, in __call__
+    return redirect(f'{self.login_url}?next={request.path}')
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\shortcuts.py", line 50, in redirect
+    return redirect_class(
+        resolve_url(to, *args, **kwargs),
+        preserve_request=preserve_request,
+    )
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\response.py", line 647, in __init__
+    raise DisallowedRedirect(
+        "Unsafe redirect to URL with protocol '%s'" % parsed.scheme
+    )
+django.core.exceptions.DisallowedRedirect: Unsafe redirect to URL with protocol 'users'
+ERROR 2026-04-08 00:47:45,569 log — Unsafe redirect to URL with protocol 'users'
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\Block\restaurant_management\restaurant_management\middleware.py", line 96, in __call__
+    return redirect(f'{self.login_url}?next={request.path}')
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\shortcuts.py", line 50, in redirect
+    return redirect_class(
+        resolve_url(to, *args, **kwargs),
+        preserve_request=preserve_request,
+    )
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\response.py", line 647, in __init__
+    raise DisallowedRedirect(
+        "Unsafe redirect to URL with protocol '%s'" % parsed.scheme
+    )
+django.core.exceptions.DisallowedRedirect: Unsafe redirect to URL with protocol 'users'
+ERROR 2026-04-08 00:47:45,638 log — Unsafe redirect to URL with protocol 'users'
+Traceback (most recent call last):
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\abotc\Block\restaurant_management\restaurant_management\middleware.py", line 96, in __call__
+    return redirect(f'{self.login_url}?next={request.path}')
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\shortcuts.py", line 50, in redirect
+    return redirect_class(
+        resolve_url(to, *args, **kwargs),
+        preserve_request=preserve_request,
+    )
+  File "C:\Users\abotc\AppData\Roaming\Python\Python314\site-packages\django\http\response.py", line 647, in __init__
+    raise DisallowedRedirect(
+        "Unsafe redirect to URL with protocol '%s'" % parsed.scheme
+    )
+django.core.exceptions.DisallowedRedirect: Unsafe redirect to URL with protocol 'users'
